@@ -10,7 +10,7 @@
 #define SQUELET
 /**************************************************************************/
 /* Compléter votre nom ici                                                */
-/*   Nom :                         Prénom :                               */
+/*   Nom : BERGERAULT                    Prénom : FOUCAULD                          */
 /**************************************************************************/
 
 extern bool modif;
@@ -28,7 +28,8 @@ int ajouter_un_contact_dans_rep(Repertoire *rep, Enregistrement enr)
 
 	if (rep->nb_elts < MAX_ENREG)
 	{
-		
+		*(rep->tab + rep->nb_elts) = enr;
+		rep->nb_elts += 1;
 
 	}
 	else {
