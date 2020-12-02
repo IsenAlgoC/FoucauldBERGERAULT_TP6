@@ -210,15 +210,11 @@ void trier(Repertoire *rep)
 				*(rep->tab + j) = *(rep->tab + j + 1);
 				*(rep->tab + j + 1)= transit;  // on inverse les valeur de tab [i]est apres tab[i+1]
 				j--;
-				if (est_sup(*(rep->tab + j), *(rep->tab + j + 1)) == true) { //On verifie mnt si tab i-1 et avant tab i+1 dans l'ordre aphap
-					stop = 1;				                                    // SINON on recomence la boucle pour redecaler i+1 de 1 cran vers la gauche										
-				}
-
-			} while (stop = 0);
-		}
+				
+			} while (est_sup(*(rep->tab + j), *(rep->tab + j + 1)) == false && j<0);//On verifie mnt si tab i-1 et avant tab i+1 dans l'ordre aphap
+		}																	// SINON on recomence la boucle pour redecaler i+1 de 1 cran vers la gauche
 		//else la boucle continue son chemin
 	}
-
 
 
 	
