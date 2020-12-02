@@ -168,14 +168,14 @@ void affichage_enreg_frmt(Enregistrement enr)
   /**********************************************************************/
 bool est_sup(Enregistrement enr1, Enregistrement enr2)
 {
-	if (_strcmpi(enr1.nom,_countof(enr1.nom), enr2.nom) == 0) {// cas ou les nom sont identiques
+	if (_strcmpi(enr1.nom, enr2.nom) == 0) {// cas ou les nom sont identiques
 	
-		if (_strcmpi(enr1.prenom, _countof(enr1.nom), enr2.prenom) <= 0) {// Cas ou le prenom 1 et Avant le prenom 2 dans l'ordre alp
+		if (_strcmpi(enr1.prenom, enr2.prenom) <= 0) {// Cas ou le prenom 1 et Avant le prenom 2 dans l'ordre alp
 			return(true);
 		}
 
 	}
-	else if (_strcmpi(enr1.nom, _countof(enr1.nom), enr2.nom) < 0) {// cas ou le nom 1 est avant le nom 2 dans l'ordre Alphab
+	else if (_strcmpi(enr1.nom, enr2.nom) < 0) {// cas ou le nom 1 est avant le nom 2 dans l'ordre Alphab
 		return(true);
 	}
 
