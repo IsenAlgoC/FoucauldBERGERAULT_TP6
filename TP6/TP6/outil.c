@@ -251,9 +251,12 @@ int rechercher_nom(Repertoire* rep, char nom[], int ind)
 
 #ifdef IMPL_TAB
 	strcpy_s(tmp_nom,_countof(tmp_nom), nom);
-	ind_fin = rep->nb_elts - 1;
-	for (i; i = ind_fin; i++) {
-		
+	for (int j=0; j<rep->nb_elts; j++) {
+		strcpy_s(tmp_nom2, _countof(tmp_nom2), rep->tab+j);
+		if (_strcmpi(tmp_nom, tmp_nom2) == 0) {
+			trouve = true;
+			break;
+		}
 	}
 
 
