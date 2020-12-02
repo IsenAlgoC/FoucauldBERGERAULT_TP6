@@ -30,6 +30,7 @@ int ajouter_un_contact_dans_rep(Repertoire *rep, Enregistrement enr)
 	{
 		*(rep->tab + rep->nb_elts) = enr;
 		rep->nb_elts += 1;
+		rep->est_trie = false;
 
 	}
 	else {
@@ -77,16 +78,17 @@ void supprimer_un_contact_dans_rep(Repertoire *rep, int indice) {
 
 	// compléter code ici pour tableau
 	if (rep->nb_elts >= 1)		/* s'il y a au moins un element ds le tableau */
-	{						/* et que l'indice pointe a l'interieur */
-		
-
-
-
-
-
-		rep->nb_elts -= 1;		/* ds ts les cas, il y a un element en moins */
-		modif = true;
+	{	
+		if (indice > -1 && indice < rep->nb_elts) {    /* et que l'indice pointe a l'interieur */
+			for (int i = indice; i < rep->nb_elts - 1;i++) {
+				*(rep->tab + i) = *(rep->tab + i + 1); 
+			}
+			rep->nb_elts -= 1;		/* ds ts les cas, il y a un element en moins */
+			modif = true;
+			return;
+		}
 	}
+	modif = false;
 
 	return;
 } /* fin supprimer */
@@ -119,6 +121,10 @@ void supprimer_un_contact_dans_rep(Repertoire *rep, int indice) {
   /**********************************************************************/
 void affichage_enreg(Enregistrement enr)
 {
+	
+
+	printf("%s  %s  %s", enr.nom, enr.prenom, enr.tel);
+
 	// code à compléter ici
 
 
@@ -132,6 +138,25 @@ void affichage_enreg_frmt(Enregistrement enr)
 {
 	// code à compléter ici
 	// comme fonction affichage_enreg, mais avec présentation alignées des infos
+	/*printf("| %c", enr.nom);
+	printf("                                           | %c |", enr.tel);
+	printf("_____________________________________________________________________________________________");*/
+
+	
+	int nbespace = 0;
+	printf("| %s", enr.nom);
+	nbespace = MAX_NOM - strlen(enr.nom);
+	for (int j = 0; j < nbespace; j++) {
+		printf(" ");
+	}
+	printf("| %s", enr.prenom);
+	nbespace = MAX_NOM - strlen(enr.prenom);
+	for (int j = 0; j < nbespace; j++) {
+		printf(" ");
+	}
+	printf("| %s", enr.tel);
+	printf("\n");
+
 	
 
 } /* fin affichage_enreg */
@@ -143,10 +168,27 @@ void affichage_enreg_frmt(Enregistrement enr)
   /**********************************************************************/
 bool est_sup(Enregistrement enr1, Enregistrement enr2)
 {
-	// code à compléter ici
-	
+	if (strcmp(enr1.nom, enr2.nom) == 0) {// cas ou les nom sont identiques
+		if (strcmp(enr1.prenom, enr2.prenom) == 0) { // cas ou les prenoms sont également identique
+			return(true);// vrai car deux prenom identique sont dans l'ordre alphabétique
+		}
+		else if (strcmp(enr1.prenom, enr2.prenom) < 0) {// Cas ou le prenom 1 et Avant le prenom 2 dans l'ordre alp
+			return(true);
+		}
+		else { // cas ou le prenon 1 est apres le prenom 2 dans l'ordre Alpha
+			return(false);
+		}
+	}
+	else if (strcmp(enr1.nom, enr2.nom) < 0) {// cas ou le nom 1 est avant le nom 2 dans l'ordre Alphab
+		return(true);
+	}
+	else {// Cas ou le nom1 est après le Nom 2 dans l'ordre Alphab
+		return(false);
+	}
+		
 
-	return(false);
+	// code à compléter ici
+	//strcmpi() regarder cette fonctio
 
 }
  
@@ -159,7 +201,24 @@ void trier(Repertoire *rep)
 
 #ifdef IMPL_TAB
 	// ajouter code ici pour tableau
-	
+	for (int i = 0; i < rep->nb_elts-1; i++) {
+		if (est_sup(*(rep->tab + i), *(rep->tab + i + 1)) == false) {// si tab [i]est apres tab[i+1] dans l'ordre alpha
+			Enregistrement transit;
+			int j = i,stop=0;
+			do {
+				transit = *(rep->tab + j);
+				*(rep->tab + j) = *(rep->tab + j + 1);
+				*(rep->tab + j + 1)= transit;  // on inverse les valeur de tab [i]est apres tab[i+1]
+				j--;
+				if (est_sup(*(rep->tab + j), *(rep->tab + j + 1)) == true) { //On verifie mnt si tab i-1 et avant tab i+1 dans l'ordre aphap
+					stop = 1;				                                    // SINON on recomence la boucle pour redecaler i+1 de 1 cran vers la gauche										
+				}
+
+			} while (stop = 0);
+		}
+		//else la boucle continue son chemin
+	}
+
 
 
 	
