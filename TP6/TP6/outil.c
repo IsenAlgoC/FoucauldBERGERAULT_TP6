@@ -31,6 +31,7 @@ int ajouter_un_contact_dans_rep(Repertoire* rep, Enregistrement enr)
 		*(rep->tab + rep->nb_elts) = enr;
 		rep->nb_elts += 1;
 		rep->est_trie = false;
+		modif = true;
 
 	}
 	else {
@@ -169,7 +170,7 @@ void affichage_enreg_frmt(Enregistrement enr)
 bool est_sup(Enregistrement enr1, Enregistrement enr2)
 {
 	if (_strcmpi(enr1.nom, enr2.nom) == 0) {// cas ou les nom sont identiques
-	
+
 		if (_strcmpi(enr1.prenom, enr2.prenom) <= 0) {// Cas ou le prenom 1 et Avant le prenom 2 dans l'ordre alp
 			return(true);
 		}
@@ -205,14 +206,14 @@ void trier(Repertoire* rep)
 				transit = *(rep->tab + j);
 				*(rep->tab + j) = *(rep->tab + j + 1);
 				*(rep->tab + j + 1) = transit;  // on inverse les valeur de tab [i]est apres tab[i+1]
-				printf("\npassage %d", j);
+
 				j--;
-				printf("\nbool %d\n", est_sup(*(rep->tab + j), *(rep->tab + j + 1)));
+
 
 			} while (est_sup(*(rep->tab + j), *(rep->tab + j + 1)) == false && j > -1);//On verifie mnt si tab i-1 et avant tab i+1 dans l'ordre aphap
 		}																	// SINON on recomence la boucle pour redecaler i+1 de 1 cran vers la gauche
 		//else la boucle continue son chemin
-		printf("\nbool du if %d\n", est_sup(*(rep->tab + i), *(rep->tab + i + 1)));
+
 	}
 
 
@@ -250,10 +251,10 @@ int rechercher_nom(Repertoire* rep, char nom[], int ind)
 
 
 #ifdef IMPL_TAB
-	strcpy_s(tmp_nom,_countof(tmp_nom), nom);
-	for (int j=0; j<rep->nb_elts; j++) {
-		strcpy_s(tmp_nom2, _countof(tmp_nom2), rep->tab+j);
-		if (_strcmpi(tmp_nom, tmp_nom2) == 0) {
+	strcpy_s(tmp_nom, _countof(tmp_nom), nom);//Copie la chaine nom dans tmp_nom
+	for (int j = 0; j < rep->nb_elts; j++) {
+		strcpy_s(tmp_nom2, _countof(tmp_nom2), rep->tab[j].nom);//Copie le nom à la position j du repertoire dans tmp Nom
+		if (_strcmpi(tmp_nom, tmp_nom2) == 0) {// Compare le nom dans le rep avec le nom recherche
 			trouve = true;
 			break;
 		}
@@ -268,7 +269,7 @@ int rechercher_nom(Repertoire* rep, char nom[], int ind)
 #endif
 #endif
 
-	return((trouve) ? i : -1);
+	return((trouve) ? i : -1); //si trouve = vrai return i sinon -1
 } /* fin rechercher_nom */
 
   /*********************************************************************/
@@ -276,7 +277,22 @@ int rechercher_nom(Repertoire* rep, char nom[], int ind)
   /*********************************************************************/
 void compact(char* s)
 {
-	// compléter code ici
+	int i = 0;
+	do {
+		if (isdigit(s[i]) < 1) {// test si le caractere est un num , un espace ou un tiret
+			int j = i; // Si NON on le supprimer en décalant tous les caracteres qui suivents de un cran vers la gauche
+			do {
+				s[j] = s[j + 1];
+				j++;
+			} while (s[j] != '\0');// On décalle jusqu'a rencontrer la fin de la liste
+
+		}
+		else {
+			i++;// Si le caracter est un num on on continue le parcours de la liste
+		}
+
+	} while (s[i] != '\0');
+
 
 	return;
 }
@@ -288,10 +304,42 @@ void compact(char* s)
 /**********************************************************************/
 int sauvegarder(Repertoire* rep, char nom_fichier[])
 {
-	FILE* fic_rep;					/* le fichier */
-#ifdef IMPL_TAB
-	// ajouter code ici pour tableau
+	FILE* fic_rep;			//le fichier
+	errno_t err = fopen_s(&fic_rep, nom_fichier, "w");
+	if (fic_rep == NULL|| err!=0) {
+		return (ERROR);
+	}
+	char buffer[sizeof(Enregistrement) + 3];
 
+#ifdef IMPL_TAB
+
+
+
+	for (int i = 0; i < rep->nb_elts; i++) {
+		sprintf_s(buffer, sizeof(Enregistrement) + 3, "%s%c%s%c%s%s", rep->tab[i].nom, SEPARATEUR, rep->tab[i].prenom, SEPARATEUR, rep->tab[i].tel,"\n");
+		fputs(buffer, fic_rep);
+	}
+	if (feof(fic_rep)) {
+		fclose(fic_rep);
+	}
+	/* struct test {
+		int a;
+		int b;
+	} test;
+
+	test t;
+	test *pt = &t;
+	t.a = 5;
+	(*pt).a = 5;
+	pt->a = 5;
+
+	typedef struct test {
+		int a[10];
+		int b[10];
+	} test;
+	test tt;
+	tt.a[5] = 10;
+	*(tt.a) == tt.a[0]*/
 #else
 #ifdef IMPL_LIST
 	// ajouter code ici pour Liste

@@ -15,7 +15,7 @@
 #endif
 
 #define MAX_ENREG 1000  /* nbre max d'enregistrements */
-#define MAX_SAISIE 1024 /* longueur max pour la saisie d'une chaîne
+#define MAX_SAISIE 1024 /* longueur max pour la saisie d'unae chaîne
 ATTENTION, il faut que MAX_SAISIE > MAX_NOM et
 MAX_SAISIE > MAX_TEL */
 
