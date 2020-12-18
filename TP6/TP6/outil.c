@@ -42,22 +42,44 @@ int ajouter_un_contact_dans_rep(Repertoire* rep, Enregistrement enr)
 #else
 #ifdef IMPL_LIST
 
+	int i = 0;
 	bool inserted = false;
-	if (rep->nb_elts == 0) {
+	if (rep->nb_elts == 0) {//Si la liste est vide on creer le premier maillon
 		if (InsertElementAt(rep->liste, rep->liste->size, enr) != 0) {
 			rep->nb_elts += 1;
-			modif = true;
 			rep->est_trie = true;
-			return(OK);
-		}
+			inserted = true;
+}
 
 	}
 	else {
-		//
-		// compléter code ici pour Liste
-		//
-		//
-		//
+		if (rep->nb_elts < MAX_ENREG) {
+			SingleLinkedListElem* elem = NULL;
+			elem = rep->liste->head;
+			while (!inserted && i <= rep->liste->size)
+			{
+				if (elem == NULL) {
+					if (InsertElementAt(rep->liste, i, enr) != 0) {
+						rep->nb_elts += 1;
+						rep->est_trie = true;
+						inserted = true;
+					}
+				}
+				else {
+					if (est_sup(enr, elem->pers)) {
+						if (InsertElementAt(rep->liste, i, enr) != 0) {
+							rep->nb_elts += 1;
+							rep->est_trie = true;
+							inserted = true;
+						}
+					}
+					elem = elem->next;
+				}
+
+				i++;
+			}
+
+		}
 
 	}
 
@@ -67,7 +89,9 @@ int ajouter_un_contact_dans_rep(Repertoire* rep, Enregistrement enr)
 #endif
 
 
-	return(OK);
+	modif = true;
+	if (inserted)  return OK;
+	else return ERROR;
 
 } /* fin ajout */
   /**********************************************************************/
@@ -242,7 +266,7 @@ void trier(Repertoire* rep)
 int rechercher_nom(Repertoire* rep, char nom[], int ind)
 {
 	int i = ind;		    /* position (indice) de début de recherche dans tableau/liste rep */
-	int ind_fin;			/* position (indice) de fin de tableau/liste rep */
+	int ind_fin = rep->nb_elts;			/* position (indice) de fin de tableau/liste rep */
 
 	char tmp_nom[MAX_NOM];	/* 2 variables temporaires dans lesquelles */
 	char tmp_nom2[MAX_NOM];	/* on place la chaine recherchee et la chaine lue dans le */
@@ -264,7 +288,14 @@ int rechercher_nom(Repertoire* rep, char nom[], int ind)
 
 #else
 #ifdef IMPL_LIST
-	// ajouter code ici pour Liste
+	strcpy_s(tmp_nom, MAX_NOM, nom);//Meme chose qu'avec TABL mais avec une liste
+	_strupr_s(tmp_nom, MAX_NOM);
+	while (!trouve && i < ind_fin) {
+		strcpy_s(tmp_nom2, MAX_NOM, GetElementAt(rep->liste, i)->pers.nom);
+		_strupr_s(tmp_nom2, MAX_NOM);
+		if (_strcmpi(tmp_nom, tmp_nom2) == 0) trouve = true;
+		i++;
+	}
 
 #endif
 #endif
@@ -322,27 +353,24 @@ int sauvegarder(Repertoire* rep, char nom_fichier[])
 	if (feof(fic_rep)) {
 		fclose(fic_rep);
 	}
-	/* struct test {
-		int a;
-		int b;
-	} test;
 
-	test t;
-	test *pt = &t;
-	t.a = 5;
-	(*pt).a = 5;
-	pt->a = 5;
-
-	typedef struct test {
-		int a[10];
-		int b[10];
-	} test;
-	test tt;
-	tt.a[5] = 10;
-	*(tt.a) == tt.a[0]*/
 #else
 #ifdef IMPL_LIST
-	// ajouter code ici pour Liste
+	if (fopen_s(&fic_rep, nom_fichier, "w+") != 0 || fic_rep == NULL)//Meme chose mais en LISTE
+		return ERROR;
+	else {
+		int i = 0;
+		while (i < rep->nb_elts) {
+			fprintf(fic_rep, "%s;", GetElementAt(rep->liste, i)->pers.nom);
+			fprintf(fic_rep, "%s;", GetElementAt(rep->liste, i)->pers.prenom);
+			fprintf(fic_rep, "%s\n", GetElementAt(rep->liste, i)->pers.tel);
+			i++;
+}
+
+
+	}
+	fclose(fic_rep);
+	return 0;
 #endif
 #endif
 
@@ -398,7 +426,20 @@ int charger(Repertoire* rep, char nom_fichier[])
 				}
 #else
 #ifdef IMPL_LIST
-														// ajouter code implemention liste
+				Enregistrement pers = { {'A'},{'A'},{'0'} };//creation d'un element qui sera rempli par ce qui est dans le fichier texte(ligne par ligne)
+				SingleLinkedListElem* elem = NULL;
+				InsertElementAt(rep->liste, num_rec, pers);
+				elem = GetElementAt(rep->liste, (num_rec));
+				if (lire_champ_suivant(buffer, &idx, elem->pers.nom, MAX_NOM, SEPARATEUR) == OK)
+				{
+					idx++;							/* on saute le separateur */
+					if (lire_champ_suivant(buffer, &idx, elem->pers.prenom, MAX_NOM, SEPARATEUR) == OK)
+					{
+						idx++;
+						if (lire_champ_suivant(buffer, &idx, elem->pers.tel, MAX_TEL, SEPARATEUR) == OK)
+							num_rec++;		/* element à priori correct, on le comptabilise */
+					}
+				}
 #endif
 #endif
 
